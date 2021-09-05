@@ -1,10 +1,17 @@
 package com.eazybytes.accounts.controller;
 
+import java.util.List;
+
 import com.eazybytes.accounts.config.AccountsServiceConfig;
 import com.eazybytes.accounts.model.Accounts;
+import com.eazybytes.accounts.model.Cards;
 import com.eazybytes.accounts.model.Customer;
+import com.eazybytes.accounts.model.CustomerDetails;
+import com.eazybytes.accounts.model.Loans;
 import com.eazybytes.accounts.model.Properties;
 import com.eazybytes.accounts.repository.AccountsRepository;
+import com.eazybytes.accounts.service.client.CardsFeignClient;
+import com.eazybytes.accounts.service.client.LoansFeignClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -23,6 +30,10 @@ public class AccountsController {
     private AccountsRepository accountsRepository;
     @Autowired
     private AccountsServiceConfig accountsServiceConfig;
+    @Autowired
+    private LoansFeignClient loansFeignClient;
+    @Autowired
+    private CardsFeignClient cardsFeignClient;
 
     @PostMapping("/myAccount")
     @Timed(value = "getAccountDetails.time", description = "Time taken to return Account Details")
@@ -42,6 +53,18 @@ public class AccountsController {
                 accountsServiceConfig.getMailDetails(), accountsServiceConfig.getActiveBranches());
         String jsonStr = ow.writeValueAsString(properties);
         return jsonStr;
+    }
+
+    @PostMapping("/myCustomerDetails")
+    public CustomerDetails myCustomerDetails(@RequestBody Customer customer) {
+        Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId());
+        List<Loans> loans = loansFeignClient.getLoansDetails(customer);
+        List<Cards> cards = cardsFeignClient.getCardDetails(customer);
+        CustomerDetails customerDetails = new CustomerDetails();
+        customerDetails.setAccounts(accounts);
+        customerDetails.setCards(cards);
+        customerDetails.setLoans(loans);
+        return customerDetails;
     }
 
 }
