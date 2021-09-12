@@ -67,8 +67,8 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<image>
-						<name>spring-cloud/${project.artifactId}</name>
-					<image>
+                        <name>spring-cloud/${project.artifactId}</name>
+                    </image>
 				</configuration>
 			</plugin>
 		</plugins>
