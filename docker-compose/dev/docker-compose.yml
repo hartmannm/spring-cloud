@@ -114,7 +114,7 @@ services:
     ports:
       - "8072:8072"
     networks:
-      - eazybank
+      - spring-cloud-network
     depends_on:
       - configserver
       - eurekaserver
@@ -134,4 +134,4 @@ services:
       SPRING_ZIPKIN_BASEURL: http://zipkin:9411/
 
 networks:
-  eazybank:
+  spring-cloud-network:
